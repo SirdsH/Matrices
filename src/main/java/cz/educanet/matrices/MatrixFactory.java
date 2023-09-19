@@ -12,15 +12,19 @@ public class MatrixFactory implements IMatrixFactory {
      */
     @Override
     public IMatrix create(double[][] data) {
-        return null;
+        return new Matrix(data);
     }
 
-    /**
-     * TODO: Implement
-     */
     @Override
     public IMatrix createDiagonal(double[] diagonal) {
-        return null;
+        if (diagonal == null) {
+            throw new IllegalArgumentException();
+        }
+        double[][] data = new double[diagonal.length][diagonal.length];
+        for (int i = 0; i < diagonal.length; i++) {
+            data[i][i] = diagonal[i];
+        }
+        return new Matrix(data);
     }
 
     /**
@@ -28,7 +32,14 @@ public class MatrixFactory implements IMatrixFactory {
      */
     @Override
     public IMatrix createIdentity(int size) {
-        return null;
+        if (size < 0) {
+            throw new IllegalArgumentException();
+        }
+        double[][] data = new double[size][size];
+        for (int i = 0; i < size; i++) {
+            data[i][i] = 1;
+        }
+        return new Matrix(data);
     }
 
     @Override

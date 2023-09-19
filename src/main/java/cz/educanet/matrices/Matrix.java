@@ -13,7 +13,16 @@ public class Matrix implements IMatrix {
      */
     @Override
     public IMatrix times(IMatrix matrix) {
-        return null;
+        double[][] data = new double[this.getRows()][matrix.getColumns()];
+
+        for (int i = 0; i < this.getRows(); i++) {
+            for (int j = 0; j < matrix.getColumns(); j++) {
+                for (int k = 0; k < this.getColumns(); k++) {
+                    data[i][j] += this.get(i, k) * matrix.get(k, j);
+                }
+            }
+        }
+        return new Matrix(data);
     }
 
     /**
@@ -21,7 +30,15 @@ public class Matrix implements IMatrix {
      */
     @Override
     public IMatrix times(Number scalar) {
-        return null;
+        double[][] data = new double[this.getRows()][this.getColumns()];
+
+        for (int i = 0; i < this.getRows(); i++) {
+            for (int j = 0; j < this.getColumns(); j++) {
+                data[i][j] = this.get(i, j) * scalar.doubleValue();
+            }
+        }
+
+        return new Matrix(data);
     }
 
     /**
@@ -29,7 +46,14 @@ public class Matrix implements IMatrix {
      */
     @Override
     public IMatrix add(IMatrix matrix) {
-        return null;
+        double[][] data = new double[this.getRows()][this.getColumns()];
+
+        for (int i = 0; i < this.getRows(); i++) {
+            for (int j = 0; j < this.getColumns(); j++) {
+                data[i][j] = this.get(i, j) + matrix.get(i, j);
+            }
+        }
+        return new Matrix(data);
     }
 
     /**
@@ -37,7 +61,14 @@ public class Matrix implements IMatrix {
      */
     @Override
     public IMatrix transpose() {
-        return null;
+        double[][] data = new double[this.getColumns()][this.getRows()];
+
+        for (int i = 0; i < this.getRows(); i++) {
+            for (int j = 0; j < this.getColumns(); j++) {
+                data[j][i] = this.get(i, j);
+            }
+        }
+        return new Matrix(data);
     }
 
     /**
@@ -45,7 +76,38 @@ public class Matrix implements IMatrix {
      */
     @Override
     public double determinant() {
-        return 0;
+        if (!isSquare()) {
+            throw new IllegalArgumentException("It needs a square idk.");
+        }
+
+        if (getRows() == 1) {
+            return rawArray[0][0];
+        }
+        double raw_WWA_champion = 0;
+
+        for (int i = 0; i < this.getColumns(); i++) {
+            if (i % 2 == 0) {
+                raw_WWA_champion += rawArray[0][i] * underMatrix(i).determinant();
+            } else raw_WWA_champion -= rawArray[0][i] * underMatrix(i).determinant();
+        }
+
+        return raw_WWA_champion;
+    }
+
+    private IMatrix underMatrix(int xy) {
+        double[][] data = new double[this.getRows() - 1][this.getColumns() - 1];
+
+        for (int i = 1; i < this.getRows(); i++) {
+            for (int j = 0; j < this.getColumns(); j++) {
+                if (j != xy) {
+                    if (j < xy) {
+                        data[i - 1][j] = rawArray[i][j];
+                    } else data[i - 1][j - 1] = rawArray[i][j];
+                }
+            }
+        }
+
+        return new Matrix(data);
     }
 
     /**
@@ -53,7 +115,7 @@ public class Matrix implements IMatrix {
      */
     @Override
     public boolean isSquare() {
-        return false;
+        return this.getRows() == this.getColumns();
     }
 
     /**
@@ -61,7 +123,18 @@ public class Matrix implements IMatrix {
      */
     @Override
     public boolean isDiagonal() {
-        return false;
+        if (!isSquare()) {
+            return false;
+        }
+
+        for (int i = 0; i < getRows(); i++) {
+            for (int j = 0; j < getColumns(); j++) {
+                if (i != j && rawArray[i][j] != 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -69,7 +142,15 @@ public class Matrix implements IMatrix {
      */
     @Override
     public Number getTrace() {
-        return null;
+        if (!isSquare()) {
+            throw new IllegalArgumentException("Its need a square idk.");
+        }
+
+        double trace = 0;
+        for (int i = 0; i < this.getRows(); i++) {
+            trace += rawArray[i][i];
+        }
+        return trace;
     }
 
     @Override
@@ -87,7 +168,7 @@ public class Matrix implements IMatrix {
 
     @Override
     public double get(int n, int m) {
-        if(n >= getRows() || n < 0 || m >= getColumns() || m < 0)
+        if (n >= getRows() || n < 0 || m >= getColumns() || m < 0)
             throw new IllegalArgumentException();
 
         return rawArray[n][m];
